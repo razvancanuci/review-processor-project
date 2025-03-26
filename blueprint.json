@@ -1,0 +1,930 @@
+{
+    "name": "AI AGENT FOR TASK CREATION ON JIRA",
+    "flow": [
+        {
+            "id": 1,
+            "module": "postgres:SelectFromTable",
+            "version": 2,
+            "parameters": {
+                "table": "\"public\".\"suggestions\"",
+                "account": 6110154,
+                "continueWhenNoRes": false,
+                "isToManageDataInSharedTransaction": true
+            },
+            "mapper": {
+                "sort": [],
+                "limit": "1",
+                "where": [
+                    [
+                        {
+                            "a": "task_created",
+                            "b": "FALSE",
+                            "o": "equal"
+                        },
+                        {
+                            "a": "suggestion",
+                            "o": "exist"
+                        }
+                    ]
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": -824,
+                    "y": -6
+                },
+                "restore": {
+                    "parameters": {
+                        "table": {
+                            "label": "public.suggestions"
+                        },
+                        "account": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "postgres"
+                            },
+                            "label": "Supabase connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account:postgres",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "continueWhenNoRes",
+                        "type": "boolean",
+                        "label": "Continue the execution of the route even if the module returns no rows",
+                        "required": true
+                    },
+                    {
+                        "name": "isToManageDataInSharedTransaction",
+                        "type": "boolean",
+                        "label": "Manage data within the shared transaction",
+                        "required": true
+                    },
+                    {
+                        "name": "table",
+                        "type": "select",
+                        "label": "Table",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "where",
+                        "type": "filter",
+                        "label": "Filter",
+                        "options": {
+                            "store": [
+                                {
+                                    "label": "id",
+                                    "value": "id"
+                                },
+                                {
+                                    "label": "suggestion",
+                                    "value": "suggestion"
+                                },
+                                {
+                                    "label": "created_at",
+                                    "value": "created_at"
+                                },
+                                {
+                                    "label": "created_by",
+                                    "value": "created_by"
+                                },
+                                {
+                                    "label": "task_created",
+                                    "value": "task_created"
+                                },
+                                {
+                                    "label": "task_created_at",
+                                    "value": "task_created_at"
+                                },
+                                {
+                                    "label": "rating",
+                                    "value": "rating"
+                                }
+                            ],
+                            "operators": [
+                                {
+                                    "label": "Basic",
+                                    "options": [
+                                        {
+                                            "label": "Is not null",
+                                            "value": "exist"
+                                        },
+                                        {
+                                            "label": "Is null",
+                                            "value": "notexist"
+                                        },
+                                        {
+                                            "label": "Equal to",
+                                            "value": "equal"
+                                        },
+                                        {
+                                            "label": "Not equal to",
+                                            "value": "notequal"
+                                        },
+                                        {
+                                            "label": "Greater than",
+                                            "value": "greater"
+                                        },
+                                        {
+                                            "label": "Greater than or equal to",
+                                            "value": "greaterorequal"
+                                        },
+                                        {
+                                            "label": "Less than",
+                                            "value": "less"
+                                        },
+                                        {
+                                            "label": "Less than or equal to",
+                                            "value": "lessorequal"
+                                        },
+                                        {
+                                            "label": "Contains",
+                                            "value": "contain"
+                                        },
+                                        {
+                                            "label": "Does not contain",
+                                            "value": "notcontain"
+                                        },
+                                        {
+                                            "label": "Starts with",
+                                            "value": "startwith"
+                                        },
+                                        {
+                                            "label": "Does not start with",
+                                            "value": "notstartwith"
+                                        },
+                                        {
+                                            "label": "Ends with",
+                                            "value": "endwith"
+                                        },
+                                        {
+                                            "label": "Does not end with",
+                                            "value": "notendwith"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "spec": [
+                            {
+                                "name": "column",
+                                "type": "select",
+                                "label": "Column",
+                                "dynamic": true,
+                                "options": [],
+                                "required": true
+                            },
+                            {
+                                "name": "order",
+                                "type": "select",
+                                "label": "Order",
+                                "options": [
+                                    {
+                                        "label": "Ascending",
+                                        "value": "asc"
+                                    },
+                                    {
+                                        "label": "Descending",
+                                        "value": "desc"
+                                    }
+                                ],
+                                "required": true
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Sort"
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "__IMTLENGTH__",
+                        "label": "Total number of bundles",
+                        "type": "uinteger"
+                    },
+                    {
+                        "name": "__IMTINDEX__",
+                        "label": "Bundle order position",
+                        "type": "uinteger"
+                    },
+                    {
+                        "name": "id",
+                        "type": "integer",
+                        "label": "id",
+                        "required": false
+                    },
+                    {
+                        "name": "suggestion",
+                        "type": "text",
+                        "label": "suggestion",
+                        "required": false
+                    },
+                    {
+                        "name": "created_at",
+                        "type": "text",
+                        "label": "created_at",
+                        "required": false
+                    },
+                    {
+                        "name": "created_by",
+                        "type": "text",
+                        "label": "created_by",
+                        "required": false
+                    },
+                    {
+                        "name": "task_created",
+                        "type": "text",
+                        "label": "task_created",
+                        "required": false
+                    },
+                    {
+                        "name": "task_created_at",
+                        "type": "text",
+                        "label": "task_created_at",
+                        "required": false
+                    },
+                    {
+                        "name": "rating",
+                        "type": "integer",
+                        "label": "rating",
+                        "required": false
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "module": "open-router:createAChatCompletion",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 6114807
+            },
+            "mapper": {
+                "messages": [
+                    {
+                        "content": "You are an assistant who will write a description and a title for a jira task based on a suggestsion created by an user, for example an user will have a suggestion and you will need to craete a jira task for it.\nReturn as resposne only the valid json as following:\n{\ntitle:<your title>,\ndescription: <your description>\n}.\nThe description should have more than 100 words.\nAdd also more paragraphs on the description which are separated by \"\\n\"",
+                        "role": "system"
+                    },
+                    {
+                        "content": "{{1.suggestion}}",
+                        "role": "user"
+                    }
+                ],
+                "model": "mistralai/mistral-saba",
+                "fallback": true,
+                "json_mode": false,
+                "n": "1",
+                "temperature": "1",
+                "top_p": "1"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -348,
+                    "y": -6
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "Razvan AI OpenRouter connection",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "open-router-4ur2vj"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "messages": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "System"
+                                    }
+                                },
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    }
+                                }
+                            ]
+                        },
+                        "model": {
+                            "mode": "chose",
+                            "label": "Mistral: Saba"
+                        },
+                        "fallback": {
+                            "mode": "chose"
+                        },
+                        "json_mode": {
+                            "mode": "chose"
+                        },
+                        "stop": {
+                            "mode": "chose"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:open-router-4ur2vj",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "messages",
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true,
+                        "spec": [
+                            {
+                                "name": "content",
+                                "type": "text",
+                                "label": "Content",
+                                "required": true
+                            },
+                            {
+                                "name": "role",
+                                "type": "select",
+                                "label": "Role",
+                                "options": [
+                                    {
+                                        "label": "User",
+                                        "value": "user"
+                                    },
+                                    {
+                                        "label": "Assistant",
+                                        "value": "assistant"
+                                    },
+                                    {
+                                        "label": "System",
+                                        "value": "system"
+                                    }
+                                ],
+                                "required": true
+                            }
+                        ]
+                    },
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "Model",
+                        "required": true
+                    },
+                    {
+                        "name": "fallback",
+                        "type": "boolean",
+                        "label": "Enable automatic Fallback?"
+                    },
+                    {
+                        "name": "json_mode",
+                        "type": "boolean",
+                        "label": "Enable JSON Mode?"
+                    },
+                    {
+                        "name": "max_tokens",
+                        "type": "integer",
+                        "label": "Max Tokens"
+                    },
+                    {
+                        "name": "n",
+                        "type": "integer",
+                        "label": "Number of Choices",
+                        "validate": {
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "temperature",
+                        "type": "number",
+                        "label": "Temperature",
+                        "validate": {
+                            "max": 2,
+                            "min": 0
+                        }
+                    },
+                    {
+                        "name": "top_p",
+                        "type": "number",
+                        "label": "Top P",
+                        "validate": {
+                            "max": 1,
+                            "min": 0
+                        }
+                    },
+                    {
+                        "name": "frequency_penalty",
+                        "type": "number",
+                        "label": "Frequency Penalty",
+                        "validate": {
+                            "max": 2,
+                            "min": -2
+                        }
+                    },
+                    {
+                        "name": "presence_penalty",
+                        "type": "number",
+                        "label": "Presence Penalty",
+                        "validate": {
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "seed",
+                        "type": "integer",
+                        "label": "Seed"
+                    },
+                    {
+                        "name": "stop",
+                        "type": "array",
+                        "label": "Stop Sequences",
+                        "spec": {
+                            "type": "text",
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "name": "top_k",
+                        "type": "number",
+                        "label": "Top k"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "json:ParseJSON",
+            "version": 1,
+            "parameters": {
+                "type": ""
+            },
+            "mapper": {
+                "json": "{{5.choices[].message.content}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 45,
+                    "y": -15
+                },
+                "restore": {
+                    "parameters": {
+                        "type": {
+                            "label": "Choose a data structure"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "type",
+                        "type": "udt",
+                        "label": "Data structure"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "json",
+                        "type": "text",
+                        "label": "JSON string",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "module": "jira:createAnIssue",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 6110652
+            },
+            "mapper": {
+                "project": "10000",
+                "summary": "{{6.title}}",
+                "reporter": "712020:c60fff06-82ac-4e22-83c8-0eff3e233ef2",
+                "issueType": "10004",
+                "description": "{{6.description}}",
+                "customFields": {}
+            },
+            "metadata": {
+                "designer": {
+                    "x": 421,
+                    "y": -8
+                },
+                "restore": {
+                    "expect": {
+                        "labels": {
+                            "mode": "chose"
+                        },
+                        "status": {
+                            "mode": "chose"
+                        },
+                        "project": {
+                            "label": "Razvan Project"
+                        },
+                        "priority": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "issueType": {
+                            "label": "Epic"
+                        },
+                        "customFields": {
+                            "nested": {
+                                "customfield_10021": {
+                                    "mode": "chose"
+                                }
+                            }
+                        },
+                        "updateHistory": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "jira"
+                            },
+                            "label": "Jira Razvan connection (Răzvan Cănuci)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:jira",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "project",
+                        "type": "select",
+                        "label": "Project ID",
+                        "required": true
+                    },
+                    {
+                        "name": "updateHistory",
+                        "type": "boolean",
+                        "label": "Update History"
+                    },
+                    {
+                        "name": "issueType",
+                        "type": "select",
+                        "label": "Issue Type ID",
+                        "required": true
+                    },
+                    {
+                        "name": "status",
+                        "type": "select",
+                        "label": "Status"
+                    },
+                    {
+                        "name": "summary",
+                        "type": "any",
+                        "label": "Summary",
+                        "required": true
+                    },
+                    {
+                        "name": "description",
+                        "type": "any",
+                        "label": "Description",
+                        "metadata": {
+                            "isDescription": true
+                        }
+                    },
+                    {
+                        "name": "reporter",
+                        "type": "text",
+                        "label": "Reporter",
+                        "metadata": {
+                            "isObjectWithId": true
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "assignee",
+                        "type": "text",
+                        "label": "Assignee",
+                        "metadata": {
+                            "isObjectWithId": true
+                        }
+                    },
+                    {
+                        "name": "duedate",
+                        "type": "date",
+                        "label": "Due date"
+                    },
+                    {
+                        "name": "labels",
+                        "spec": {
+                            "name": "value",
+                            "type": "text"
+                        },
+                        "type": "array",
+                        "label": "Labels"
+                    },
+                    {
+                        "name": "priority",
+                        "type": "select",
+                        "label": "Priority",
+                        "metadata": {
+                            "isObjectWithId": true
+                        }
+                    },
+                    {
+                        "name": "customFields",
+                        "spec": [
+                            {
+                                "name": "customfield_10000",
+                                "type": "any",
+                                "label": "Development"
+                            },
+                            {
+                                "name": "customfield_10001",
+                                "type": "text",
+                                "label": "Team"
+                            },
+                            {
+                                "name": "customfield_10015",
+                                "type": "date",
+                                "label": "Start date"
+                            },
+                            {
+                                "name": "customfield_10017",
+                                "type": "any",
+                                "label": "Issue color"
+                            },
+                            {
+                                "name": "customfield_10019",
+                                "type": "any",
+                                "label": "Rank"
+                            },
+                            {
+                                "name": "customfield_10021",
+                                "type": "select",
+                                "label": "Flagged",
+                                "metadata": {
+                                    "isArrayWithId": true
+                                },
+                                "multiple": true
+                            },
+                            {
+                                "name": "customfield_10032",
+                                "type": "any",
+                                "label": "Vulnerability"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Custom Fields"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "postgres:UpdateTable",
+            "version": 2,
+            "parameters": {
+                "table": "\"public\".\"suggestions\"",
+                "account": 6110154,
+                "isToManageDataInSharedTransaction": true
+            },
+            "mapper": {
+                "@id": "",
+                "where": [
+                    [
+                        {
+                            "a": "id",
+                            "b": "{{1.id}}",
+                            "o": "equal"
+                        }
+                    ]
+                ],
+                "@rating": "",
+                "@created_at": "",
+                "@created_by": "",
+                "@suggestion": "",
+                "@task_created": "TRUE",
+                "@task_created_at": "now()"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 721,
+                    "y": -8
+                },
+                "restore": {
+                    "parameters": {
+                        "table": {
+                            "label": "public.suggestions"
+                        },
+                        "account": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "postgres"
+                            },
+                            "label": "Supabase connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "account",
+                        "type": "account:postgres",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "isToManageDataInSharedTransaction",
+                        "type": "boolean",
+                        "label": "Manage data within the shared transaction",
+                        "required": true
+                    },
+                    {
+                        "name": "table",
+                        "type": "select",
+                        "label": "Table",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "@id",
+                        "type": "integer",
+                        "label": "id"
+                    },
+                    {
+                        "name": "@suggestion",
+                        "type": "text",
+                        "label": "suggestion"
+                    },
+                    {
+                        "name": "@created_at",
+                        "type": "text",
+                        "label": "created_at"
+                    },
+                    {
+                        "name": "@created_by",
+                        "type": "text",
+                        "label": "created_by"
+                    },
+                    {
+                        "name": "@task_created",
+                        "type": "text",
+                        "label": "task_created"
+                    },
+                    {
+                        "name": "@task_created_at",
+                        "type": "text",
+                        "label": "task_created_at"
+                    },
+                    {
+                        "name": "@rating",
+                        "type": "integer",
+                        "label": "rating"
+                    },
+                    {
+                        "name": "where",
+                        "type": "filter",
+                        "label": "Filter",
+                        "options": {
+                            "store": [
+                                {
+                                    "label": "id",
+                                    "value": "id"
+                                },
+                                {
+                                    "label": "suggestion",
+                                    "value": "suggestion"
+                                },
+                                {
+                                    "label": "created_at",
+                                    "value": "created_at"
+                                },
+                                {
+                                    "label": "created_by",
+                                    "value": "created_by"
+                                },
+                                {
+                                    "label": "task_created",
+                                    "value": "task_created"
+                                },
+                                {
+                                    "label": "task_created_at",
+                                    "value": "task_created_at"
+                                },
+                                {
+                                    "label": "rating",
+                                    "value": "rating"
+                                }
+                            ],
+                            "operators": [
+                                {
+                                    "label": "Basic",
+                                    "options": [
+                                        {
+                                            "label": "Is not null",
+                                            "value": "exist"
+                                        },
+                                        {
+                                            "label": "Is null",
+                                            "value": "notexist"
+                                        },
+                                        {
+                                            "label": "Equal to",
+                                            "value": "equal"
+                                        },
+                                        {
+                                            "label": "Not equal to",
+                                            "value": "notequal"
+                                        },
+                                        {
+                                            "label": "Greater than",
+                                            "value": "greater"
+                                        },
+                                        {
+                                            "label": "Greater than or equal to",
+                                            "value": "greaterorequal"
+                                        },
+                                        {
+                                            "label": "Less than",
+                                            "value": "less"
+                                        },
+                                        {
+                                            "label": "Less than or equal to",
+                                            "value": "lessorequal"
+                                        },
+                                        {
+                                            "label": "Contains",
+                                            "value": "contain"
+                                        },
+                                        {
+                                            "label": "Does not contain",
+                                            "value": "notcontain"
+                                        },
+                                        {
+                                            "label": "Starts with",
+                                            "value": "startwith"
+                                        },
+                                        {
+                                            "label": "Does not start with",
+                                            "value": "notstartwith"
+                                        },
+                                        {
+                                            "label": "Ends with",
+                                            "value": "endwith"
+                                        },
+                                        {
+                                            "label": "Does not end with",
+                                            "value": "notendwith"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu2.make.com",
+        "notes": []
+    }
+}
