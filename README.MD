@@ -73,3 +73,5 @@ https://review-processor-frontend.onrender.com/
 For the errors there are logs on Sentry.io:
 
 ![Sentry](assets/sentry_logs.png)
+
+Note: The whole code documentation was generated using AI 😊
